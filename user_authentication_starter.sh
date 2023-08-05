@@ -1,7 +1,7 @@
 #!/bin/bash
 ## to be updated to match your settings
 PROJECT_HOME="."
-credentials_file="$PROJECT_HOME/data/credentials.txt"
+credentials_file="./credentials.txt"
 
 # Function to prompt for credentials
 get_credentials() {
@@ -29,6 +29,11 @@ hash_password() {
 check_existing_username(){
     username=$1
     ## verify if a username is already included in the credentials file
+    if grep -q "^${username}:" "$credentials_file"; then
+        return 0  
+    else
+        return 1  
+    fi
 }
 
 ## function to add new credentials to the file
@@ -44,9 +49,13 @@ register_credentials() {
     ## call the function to check if the username exists
     check_existing_username $username
     #TODO: if it exists, safely fails from the function.
+     if check_existing_username "$username"; then
+        echo "Username already exists. Registration failed."
+        return 1
+    fi
     
     ## retrieve the role. Defaults to "normal" if the 4th argument is not passed
-
+    role=${4:-"normal"}
     ## check if the role is valid. Should be either normal, salesperson, or admin
 
     ## first generate a salt
@@ -54,6 +63,10 @@ register_credentials() {
     ## then hash the password with the salt
     hashed_pwd=`hash_password $password $salt`
     ## append the line in the specified format to the credentials file (see below)
+    echo "${username}:${hashed_pwd}:${salt}:${fullname}:${role}:0" >> "$credentials_file"
+            echo "Registration successful for user: $username"
+            return 0
+        
     ## username:hash:salt:fullname:role:is_logged_in
 }
 
@@ -75,13 +88,13 @@ verify_credentials() {
     ### else, print "invalid password" and fail.
 }
 
-logout() {
-    #TODO: check that the .logged_in file is not empty
-    # if the file exists and is not empty, read its content to retrieve the username
-    # of the currently logged in user
+# logout() {
+#     #TODO: check that the .logged_in file is not empty
+#     # if the file exists and is not empty, read its content to retrieve the username
+#     # of the currently logged in user
 
-    # then delete the existing .logged_in file and update the credentials file by changing the last field to 0
-}
+#     # then delete the existing .logged_in file and update the credentials file by changing the last field to 0
+# }
 
 ## Create the menu for the application
 # at the start, we need an option to login, self-register (role defaults to normal)
@@ -93,6 +106,42 @@ logout() {
 
 # Main script execution starts here
 echo "Welcome to the authentication system."
+while true; do
+    echo "Select an option:"
+    echo "1. Login"
+    echo "2. Register"
+    echo "3. Logout"
+    echo "4. Close the program"
+    read -p "Enter your choice: " choice
+
+    case $choice in
+        1)
+            # Call the login function
+            echo "======Login======"
+            # ... (call the function for login)
+            ;;
+        2)
+            # Call the register function
+            echo "======Register======"
+            # ... (call the function for register)
+            get_credentials
+            read -p 'Fullname: ' fullname
+            register_credentials "$user" "$pass" "$fullname"
+            ;;
+        3)
+            # Call the logout function
+            echo " Logout..."
+            # ... (call the function for logout)
+            ;;
+        4)
+            echo "EXiting the program. bye bye!"
+            exit 0
+            ;;
+        *)
+            echo "Invalid choice. Please select a valid option (1-4)."
+            ;;
+    esac
+done
 
 #### BONUS
 #1. Implement a function to delete an account from the file
