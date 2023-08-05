@@ -92,6 +92,8 @@ verify_credentials() {
 
     stored_hash=$(echo "$is_username_empty" | cut -d: -f2)
     salt=$(echo "$is_username_empty" | cut -d: -f3)
+    fullname=$(echo "$is_username_empty" | cut -d: -f4)
+    role=$(echo "$is_username_empty" | cut -d: -f5)
 
 
     ## compute the hash based on the provided password
@@ -107,7 +109,7 @@ verify_credentials() {
 
         # update the .logged_in file
         echo "$username" > ".logged_in"
-        echo "Login Successful"
+        echo "Welcome $fullname! You have successfully logged in as ${role^}"
         return 0
     fi
     ### if the hashes match, update the credentials file, override the .logged_in file with the
@@ -121,7 +123,7 @@ logout() {
     # if the file exists and is not empty, read its content to retrieve the username
     # of the currently logged in user
 
-    if [[ -f ".logged_in" ]]; then
+    if [[ -f ".logged_in" && -n $(cat ".logged_in") ]]; then
         username=$(cat ".logged_in")
         # ToDo 2: update is_logged_in field in credentials file
 
