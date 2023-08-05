@@ -2,6 +2,7 @@
 ## to be updated to match your settings
 PROJECT_HOME="."
 credentials_file="./credentials.txt"
+logged_in="./Logged_in.txt"
 
 # Function to prompt for credentials
 get_credentials() {
@@ -77,11 +78,24 @@ verify_credentials() {
     username=$1
     password=$2
     ## retrieve the stored hash, and the salt from the credentials file
+    stored_hash=$(grep "^$username:" credentials.txt | cut -d ':' -f 2)
+    stored_salt=$(grep "^$username:" credentials.txt | cut -d ':' -f 3)
     # if there is no line, then return 1 and output "Invalid username"
-
+      if [ -z "$stored_hash" ] || [ -z "$stored_salt" ]; then
+        echo "Invalid username"
+        return 1
+    fi
     ## compute the hash based on the provided password
-    
+     computed_hash=$(echo -n "$password$stored_salt" | sha256sum | awk '{print $1}')
     ## compare to the stored hash
+     if [ "$computed_hash" = "$stored_hash" ]; then
+     echo "$username" >> "$logged_in"
+     new_value=1
+     sed -i "/^$username:.*:0$/ s/$/1/" credentials.txt
+     echo "Login successful for user:$username"
+     else
+     echo "invalid credentials"
+     fi
     ### if the hashes match, update the credentials file, override the .logged_in file with the
     ### username of the logged in user
 
@@ -119,6 +133,8 @@ while true; do
             # Call the login function
             echo "======Login======"
             # ... (call the function for login)
+            get_credentials
+            verify_credentials "$user" "$pass"
             ;;
         2)
             # Call the register function
