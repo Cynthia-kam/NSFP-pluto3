@@ -90,8 +90,7 @@ verify_credentials() {
     ## compare to the stored hash
      if [ "$computed_hash" = "$stored_hash" ]; then
      echo "$username" >> "$logged_in"
-     new_value=1
-     sed -i "/^$username:.*:0$/ s/$/1/" credentials.txt
+     sed -i "/^$username:.*:0$/ s/0$/1/" credentials.txt
      echo "Login successful for user:$username"
      else
      echo "invalid credentials"
@@ -102,13 +101,20 @@ verify_credentials() {
     ### else, print "invalid password" and fail.
 }
 
-# logout() {
+logout_fun() {
 #     #TODO: check that the .logged_in file is not empty
+    if [ -f "$logged_in" ]; then
+       
 #     # if the file exists and is not empty, read its content to retrieve the username
 #     # of the currently logged in user
-
+        if grep -q "." "$logged_in"; then
 #     # then delete the existing .logged_in file and update the credentials file by changing the last field to 0
-# }
+# deleting the content of file instead
+         > "$logged_in" 
+           sed -i "/^$username:.*:1$/ s/1$/0/" credentials.txt
+        fi
+    fi
+}
 
 ## Create the menu for the application
 # at the start, we need an option to login, self-register (role defaults to normal)
@@ -146,7 +152,9 @@ while true; do
             ;;
         3)
             # Call the logout function
-            echo " Logout..."
+            echo " Logging out..."
+            logout_fun
+            sleep 5
             # ... (call the function for logout)
             ;;
         4)
