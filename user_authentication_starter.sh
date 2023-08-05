@@ -33,6 +33,7 @@ hash_password() {
 check_existing_username(){
     username=$1
     ## verify if a username is already included in the credentials file
+    grep $username $credentials_file
 }
 
 ## function to add new credentials to the file
@@ -43,16 +44,25 @@ register_credentials() {
     # arg4 (optional) is the role. Defaults to "normal"
 
     username=${1:?"Username is required"}
+    username="${username,,}"
     password=${2:?"Password is required"}
     fullname=${3:?"Fullname is required"}
     role=${4:-"normal"}
+    role="${role,,}"
     ## call the function to check if the username exists
-    check_existing_username $username
+    res=`check_existing_username $username`
     #TODO: if it exists, safely fails from the function.
-    
+    if [[ -n "$res" ]]; then
+        echo "username already exist"
+        return 1
+    fi
     ## retrieve the role. Defaults to "normal" if the 4th argument is not passed
 
     ## check if the role is valid. Should be either normal, salesperson, or admin
+    if [[ ! " ${ROLES[@]} " =~ " ${role} " ]]; then
+        echo "Invalid role"
+        return 1
+    fi
 
     ## first generate a salt
     salt=`generate_salt`
@@ -62,6 +72,7 @@ register_credentials() {
     ## username:hash:salt:fullname:role:is_logged_in
 
     echo "$username:$hashed_pwd:$salt:$fullname:$role:0" >> $credentials_file
+    echo "Registration Successful. You can now log in"
 }
 
 # Function to verify credentials
@@ -107,6 +118,7 @@ echo "Welcome to the authentication system."
 #### BONUS
 #1. Implement a function to delete an account from the file
 
+# display registration menu
 display_registration_menu(){
     echo  "===== User Registration ====="
     read -p "Username: " username
@@ -122,19 +134,17 @@ display_registration_menu(){
     fi
 
     read -p "Fullname: " fullname
-    read -p "Enter role (admin/normal/salesperson): " role
+    # read -p "Enter role (admin/normal/salesperson): " role
     echo
     
     # register user
-    # register_credentials $username $password $fullname $role
-    hash_password "password" "salt"
-
+    # register_credentials $username $password "$fullname" $role
+    register_credentials $username $password "$fullname"
 }
 
 
 # display welcome menu
-echo "Welcome to the Autrhentication System"
-echo "Please select an option:$\n"
+echo "Please select an option: "
 for ((i=0; i<${#MENU[@]}; i++))
 do
     echo "$(expr $i + 1). ${MENU[$i]}"
@@ -145,10 +155,9 @@ done
 read -p "Enter your choice: " CHOICE
 case $CHOICE in
     1)
-        echo "One"
+        get_credentials
         ;;
     2)
-        echo "Two"
         display_registration_menu
         ;;
     3)
