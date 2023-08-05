@@ -33,7 +33,7 @@ hash_password() {
 check_existing_username(){
     username=$1
     ## verify if a username is already included in the credentials file
-    grep $username $credentials_file
+    grep "^$username" $credentials_file
 }
 
 ## function to add new credentials to the file
@@ -80,13 +80,36 @@ verify_credentials() {
     ## arg1 is username
     ## arg2 is password
     username=$1
+    username=${username,,}
     password=$2
     ## retrieve the stored hash, and the salt from the credentials file
     # if there is no line, then return 1 and output "Invalid username"
+    is_username_empty=$(grep "^$username" $credentials_file)
+    if [[ -z "$is_username_empty" ]]; then
+        echo "Invalid username"
+        return 1
+    fi
+
+    stored_hash=$(echo "$is_username_empty" | cut -d: -f2)
+    salt=$(echo "$is_username_empty" | cut -d: -f3)
+
 
     ## compute the hash based on the provided password
+    computed_hash=`hash_password $password $salt`
     
     ## compare to the stored hash
+    if [[ "$stored_hash" != "$computed_hash" ]]; then
+        echo "Invalid password"
+        return 1
+        else
+        # update credentials file
+        # ToDo 1: update is_logined field in credentials file
+
+        # update the .logged_in file
+        echo "$username" > ".logged_in"
+        echo "Login Successful"
+        return 0
+    fi
     ### if the hashes match, update the credentials file, override the .logged_in file with the
     ### username of the logged in user
 
@@ -94,12 +117,32 @@ verify_credentials() {
 }
 
 logout() {
-    echo "logging out"
     #TODO: check that the .logged_in file is not empty
     # if the file exists and is not empty, read its content to retrieve the username
     # of the currently logged in user
 
+    if [[ -f ".logged_in" ]]; then
+        username=$(cat ".logged_in")
+        # ToDo 2: update is_logged_in field in credentials file
+
+        # delete .logged_in
+        rm ".logged_in"
+        echo "Logged out"
+    else
+        echo "You are not logged in"
+    fi
+
     # then delete the existing .logged_in file and update the credentials file by changing the last field to 0
+}
+
+login(){
+    echo "===== Login ===="
+    read -p 'Username: ' user
+    read -rs -p 'Password: ' pass
+    echo
+  
+    # verify credentials
+    verify_credentials $user $pass
 }
 
 ## Create the menu for the application
@@ -155,13 +198,13 @@ done
 read -p "Enter your choice: " CHOICE
 case $CHOICE in
     1)
-        get_credentials
+        login
         ;;
     2)
         display_registration_menu
         ;;
     3)
-        echo "Three"
+        logout
         ;;
     4)
         exit
