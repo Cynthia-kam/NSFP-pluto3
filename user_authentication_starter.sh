@@ -3,6 +3,7 @@
 # program options
 MENU=("Login" "Register" "Logout" "Close the program")
 ROLES=("admin" "normal" "salesperson")
+ADMIN_OPTIONS=("Register Others" "Delete Account")
 
 PROJECT_HOME="."
 credentials_file="$PROJECT_HOME/data/credentials.txt"
@@ -30,7 +31,7 @@ hash_password() {
     return 0
 }
 
-check_existing_username(){
+check_existing_username() {
     username=$1
     ## verify if a username is already included in the credentials file
     grep "^$username" $credentials_file
@@ -50,7 +51,7 @@ register_credentials() {
     role=${4:-"normal"}
     role="${role,,}"
     ## call the function to check if the username exists
-    res=`check_existing_username $username`
+    res=$(check_existing_username $username)
     #TODO: if it exists, safely fails from the function.
     if [[ -n "$res" ]]; then
         echo "username already exist"
@@ -65,13 +66,13 @@ register_credentials() {
     fi
 
     ## first generate a salt
-    salt=`generate_salt`
+    salt=$(generate_salt)
     ## then hash the password with the salt
-    hashed_pwd=`hash_password $password $salt`
+    hashed_pwd=$(hash_password $password $salt)
     ## append the line in the specified format to the credentials file (see below)
     ## username:hash:salt:fullname:role:is_logged_in
 
-    echo "$username:$hashed_pwd:$salt:$fullname:$role:0" >> $credentials_file
+    echo "$username:$hashed_pwd:$salt:$fullname:$role:0" >>$credentials_file
     echo "Registration Successful. You can now log in"
 }
 
@@ -95,21 +96,23 @@ verify_credentials() {
     fullname=$(echo "$is_username_empty" | cut -d: -f4)
     role=$(echo "$is_username_empty" | cut -d: -f5)
 
-
     ## compute the hash based on the provided password
-    computed_hash=`hash_password $password $salt`
-    
+    computed_hash=$(hash_password $password $salt)
+
     ## compare to the stored hash
     if [[ "$stored_hash" != "$computed_hash" ]]; then
         echo "Invalid password"
         return 1
-        else
+    else
         # update credentials file
         # ToDo 1: update is_logined field in credentials file
 
         # update the .logged_in file
-        echo "$username" > ".logged_in"
+        echo "$username" >".logged_in"
         echo "Welcome $fullname! You have successfully logged in as ${role^}"
+        if [[ "$role" == "admin" ]]; then
+            admin_options
+        fi
         return 0
     fi
     ### if the hashes match, update the credentials file, override the .logged_in file with the
@@ -137,12 +140,12 @@ logout() {
     # then delete the existing .logged_in file and update the credentials file by changing the last field to 0
 }
 
-login(){
-    echo "===== Login ===="
+login() {
+    echo "===== Login ====="
     read -p 'Username: ' user
     read -rs -p 'Password: ' pass
     echo
-  
+
     # verify credentials
     verify_credentials $user $pass
 }
@@ -152,25 +155,43 @@ login(){
 # and exit the application.
 
 # After the user is logged in, display a menu for logging out.
-# if the user is also an admin, add an option to create an account using the 
+# if the user is also an admin, add an option to create an account using the
 # provided functions.
 
 # Main script execution starts here
 echo "Welcome to the authentication system."
 
-
-
 #### BONUS
 #1. Implement a function to delete an account from the file
 
-# display registration menu
-display_registration_menu(){
-    echo  "===== User Registration ====="
+# takes a username as an argument
+# checks if the username exists
+# if it does, delete the account
+# else, print "Account does not exist"
+delete_account() {
+    username=$1
+    username=${username,,}
+
+    is_username=$(grep "^$username" $credentials_file)
+
+    if [[ -z "$is_username_empty" ]]; then
+        echo "Account does not exist"
+        return 1
+    else
+        echo "Deleting account..."
+        sed -i "/^$username/d" $credentials_file
+    fi
+
+}
+
+# display self registration menu
+display_registration_menu() {
+    echo "===== User Registration ====="
     read -p "Username: " username
     read -rs -p "Password: " password
     echo # print new line
     read -rs -p "Confirm password: " confirm_password
-    echo # print new line 
+    echo # print new line
 
     # Verification
     if [[ $password != $confirm_password ]]; then
@@ -181,43 +202,74 @@ display_registration_menu(){
     read -p "Fullname: " fullname
     # read -p "Enter role (admin/normal/salesperson): " role
     echo
-    
+
     # register user
     # register_credentials $username $password "$fullname" $role
     register_credentials $username $password "$fullname"
 }
 
+admin_options() {
+    echo "===== What would you like to do ====="
 
-# display welcome menu
-echo "Please select an option: "
-for ((i=0; i<${#MENU[@]}; i++))
-do
-    echo "$(expr $i + 1). ${MENU[$i]}"
-done
+    for ((i = 0; i < ${#ADMIN_OPTIONS[@]}; i++)); do
+        echo "$(expr $i + 1). ${ADMIN_OPTIONS[$i]}"
+    done
 
-
-# PROMT USER FOR CHOICE
-read -p "Enter your choice: " CHOICE
-case $CHOICE in
+    # PROMT USER FOR CHOICE
+    read -p "Enter your choice: " CHOICE
+    case $CHOICE in
     1)
-        login
+        read -p "Username: " username
+        read -rs -p "Password: " password
+        echo # print new line
+        read -rs -p "Confirm password: " confirm_password
+        echo # print new line
+
+        # Password Confirmation
+        if [[ $password != $confirm_password ]]; then
+            echo "Passwords do not match"
+            return 1
+        fi
+
+        read -p "Fullname: " fullname
+        read -p "Enter role (admin/normal/salesperson): " role
+        echo
+
+        # register user
+        register_credentials $username $password "$fullname" $role
         ;;
     2)
-        display_registration_menu
-        ;;
-    3)
-        logout
-        ;;
-    4)
-        exit
+        read -p "Username: " username
+        delete_account $username
         ;;
     *)
         echo "Invalid Selection"
         ;;
+    esac
+}
+
+# display welcome menu
+echo "Please select an option: "
+for ((i = 0; i < ${#MENU[@]}; i++)); do
+    echo "$(expr $i + 1). ${MENU[$i]}"
+done
+
+# PROMT USER FOR CHOICE
+read -p "Enter your choice: " CHOICE
+case $CHOICE in
+1)
+    login
+    ;;
+2)
+    display_registration_menu
+    ;;
+3)
+    logout
+    ;;
+4)
+    exit
+    ;;
+*)
+    echo "Invalid Selection"
+    ;;
 esac
-
-
-
-
-
-
