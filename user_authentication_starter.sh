@@ -97,12 +97,13 @@ verify_credentials() {
     ## compare to the stored hash
     ### if the hashes match, update the credentials file, override the .logged_in file with the
     ### username of the logged in user
-    login_status=`grep "^$username" "$credentials_file" | cut -d':' -f6`
+    stored_fullname=`grep "^$username" "$credentials_file" | cut -d':' -f4`
+    stored_role=`grep "^$username" "$credentials_file" | cut -d':' -f5`
     if [[ "$stored_hash" == "$hashed_pwd" ]]; then
         echo "$username" > "$logged_in_file"
-        login_status="1"
-        echo "$login_status"
-        
+        # sed -i "s/^$username:.*:.*:.*:.*:0$/$username:.*:.*:.*:.*:1/" "$credentials_file"
+        # sed -i "s/^$username:.*:.*:.*:.*:1$/$username:.*:.*:.*:.*:0/" "$credentials_file"
+        sed -i "s/^$username:.*:.*:.*:.*:0$/$username:$stored_hash:$stored_salt:$stored_fullname:$stored_role:1/" "$credentials_file"
         echo "Login successful"
     ### else, print "invalid password" and fail.
     else
@@ -111,12 +112,12 @@ verify_credentials() {
     fi
 }
 
-verify_credentials "jdoe" "password"
+verify_credentials "kev" "password"
 
 # logout() {
-#     #TODO: check that the .logged_in file is not empty
-#     # if the file exists and is not empty, read its content to retrieve the username
-#     # of the currently logged in user
+# #     #TODO: check that the .logged_in file is not empty
+# #     # if the file exists and is not empty, read its content to retrieve the username
+# #     # of the currently logged in user
 
 #     # then delete the existing .logged_in file and update the credentials file by changing the last field to 0
 # }
