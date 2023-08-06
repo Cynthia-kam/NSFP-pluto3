@@ -112,15 +112,26 @@ verify_credentials() {
     fi
 }
 
-verify_credentials "kev" "password"
+# verify_credentials "kev" "password"
 
-# logout() {
-# #     #TODO: check that the .logged_in file is not empty
-# #     # if the file exists and is not empty, read its content to retrieve the username
-# #     # of the currently logged in user
+logout() {
+    
 
-#     # then delete the existing .logged_in file and update the credentials file by changing the last field to 0
-# }
+    if [[ ! -z "$logged_in_file" ]] && [[ -e "$logged_in_file" ]]; then
+        logged_in_user=`cat "$logged_in_file"`
+        stored_hash=`grep "^$logged_in_user" "$credentials_file" | cut -d':' -f2`
+        stored_salt=`grep "^$logged_in_user" "$credentials_file" | cut -d':' -f3`
+        stored_fullname=`grep "^$logged_in_user" "$credentials_file" | cut -d':' -f4`
+        stored_role=`grep "^$logged_in_user" "$credentials_file" | cut -d':' -f5`
+        sed -i "s/^$logged_in_user:.*:.*:.*:.*:1$/$logged_in_user:$stored_hash:$stored_salt:$stored_fullname:$stored_role:0/" "$credentials_file"
+        rm "$logged_in_file"
+    else
+        echo "No logged in user"
+        return 1
+    fi
+}
+
+logout
 
 ## Create the menu for the application
 # at the start, we need an option to login, self-register (role defaults to normal)
