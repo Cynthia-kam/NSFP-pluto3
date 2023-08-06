@@ -2,13 +2,14 @@
 ## to be updated to match your settings
 PROJECT_HOME="."
 credentials_file="$PROJECT_HOME/data/credentials.txt"
+logged_in_file="$PROJECT_HOME/data/.logged_in"
 
 # Function to prompt for credentials
-# get_credentials() {
-#     read -p 'Username: ' user
-#     read -rs -p 'Password: ' pass
-#     echo
-# }
+get_credentials() {
+    read -p 'Username: ' user
+    read -rs -p 'Password: ' pass
+    echo
+}
 
 generate_salt() {
     openssl rand -hex 8
@@ -52,11 +53,8 @@ register_credentials() {
         echo "User already exists"
         return 1
     fi
-    # check_existing_username $username
+
     #TODO: if it exists, safely fails from the function.
-        # echo "User already exists from checking_existing_username inside register_credentials"
-        # return 1
-    # fi
     
     ## retrieve the role. Defaults to "normal" if the 4th argument is not passed
     role=${4:-"normal"}
@@ -76,25 +74,44 @@ register_credentials() {
     echo "$username:$hashed_pwd:$salt:$fullname:$role:0" >> "$credentials_file"
 }
 
-register_credentials "koli" "password" "Karera Olivier"
+# register_credentials "cyn" "password" "Cynthia Abijuru"
 
 # Function to verify credentials
-# verify_credentials() {
-#     ## arg1 is username
-#     ## arg2 is password
-#     username=$1
-#     password=$2
-#     ## retrieve the stored hash, and the salt from the credentials file
-#     # if there is no line, then return 1 and output "Invalid username"
+verify_credentials() {
+    ## arg1 is username
+    ## arg2 is password
+    username=$1
+    password=$2
+    ## retrieve the stored hash, and the salt from the credentials file
+    # if there is no line, then return 1 and output "Invalid username"
+    stored_hash=`grep "^$username" "$credentials_file" | cut -d':' -f2`
+    if [[ -z "$stored_hash" ]] || ! check_existing_username "$username"; then
+        echo "Invalid username"
+        return 1
+    fi
+    echo "$stored_hash"
+    ## compute the hash based on the provided password
+    stored_salt=`grep "^$username" "$credentials_file" | cut -d':' -f3`
+    hashed_pwd=`hash_password "$password" "$stored_salt"`
+    echo "$hashed_pwd"
+    ## compare to the stored hash
+    ### if the hashes match, update the credentials file, override the .logged_in file with the
+    ### username of the logged in user
+    login_status=`grep "^$username" "$credentials_file" | cut -d':' -f6`
+    if [[ "$stored_hash" == "$hashed_pwd" ]]; then
+        echo "$username" > "$logged_in_file"
+        login_status="1"
+        echo "$login_status"
+        
+        echo "Login successful"
+    ### else, print "invalid password" and fail.
+    else
+        echo "Invalid password"
+        exit 1
+    fi
+}
 
-#     ## compute the hash based on the provided password
-    
-#     ## compare to the stored hash
-#     ### if the hashes match, update the credentials file, override the .logged_in file with the
-#     ### username of the logged in user
-
-#     ### else, print "invalid password" and fail.
-# }
+verify_credentials "jdoe" "password"
 
 # logout() {
 #     #TODO: check that the .logged_in file is not empty
