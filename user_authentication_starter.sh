@@ -3,7 +3,7 @@
 # program options
 MENU=("Login" "Register" "Logout" "Close the program")
 ROLES=("admin" "normal" "salesperson")
-ADMIN_OPTIONS=("Register Others" "Delete Account")
+ADMIN_OPTIONS=("Register Others" "Delete Account" "Exit")
 
 PROJECT_HOME="."
 credentials_file="$PROJECT_HOME/data/credentials.txt"
@@ -109,6 +109,7 @@ verify_credentials() {
 
         # update the .logged_in file
         echo "$username" >".logged_in"
+        sed -i "s/^$username:.*:.*:.*:.*:0$/$username:$stored_hash:$salt:$fullname:$role:1/" "$credentials_file"
         echo "Welcome $fullname! You have successfully logged in as ${role^}"
         if [[ "$role" == "admin" ]]; then
             admin_options
@@ -131,6 +132,11 @@ logout() {
         # ToDo 2: update is_logged_in field in credentials file
 
         # delete .logged_in
+        stored_hash=`grep "^$username" "$credentials_file" | cut -d':' -f2`
+        stored_salt=`grep "^$username" "$credentials_file" | cut -d':' -f3`
+        stored_fullname=`grep "^$username" "$credentials_file" | cut -d':' -f4`
+        stored_role=`grep "^$username" "$credentials_file" | cut -d':' -f5`
+        sed -i "s/^$username:.*:.*:.*:.*:1$/$username:$stored_hash:$stored_salt:$stored_fullname:$stored_role:0/" "$credentials_file"
         rm ".logged_in"
         echo "Logged out"
     else
@@ -186,6 +192,7 @@ delete_account() {
 
 # display self registration menu
 display_registration_menu() {
+
     echo "===== User Registration ====="
     read -p "Username: " username
     read -rs -p "Password: " password
@@ -208,68 +215,75 @@ display_registration_menu() {
     register_credentials $username $password "$fullname"
 }
 
-admin_options() {
-    echo "===== What would you like to do ====="
 
-    for ((i = 0; i < ${#ADMIN_OPTIONS[@]}; i++)); do
-        echo "$(expr $i + 1). ${ADMIN_OPTIONS[$i]}"
+admin_options() {
+    while true; do
+        echo "===== What would you like to do ====="
+
+        for ((i = 0; i < ${#ADMIN_OPTIONS[@]}; i++)); do
+            echo "$(expr $i + 1). ${ADMIN_OPTIONS[$i]}"
+        done
+
+        # PROMT USER FOR CHOICE
+        read -p "Enter your choice: " CHOICE
+        case $CHOICE in
+        1)
+            read -p "Username: " username
+            read -rs -p "Password: " password
+            echo # print new line
+            read -rs -p "Confirm password: " confirm_password
+            echo # print new line
+
+            # Password Confirmation
+            if [[ $password != $confirm_password ]]; then
+                echo "Passwords do not match"
+                return 1
+            fi
+
+            read -p "Fullname: " fullname
+            read -p "Enter role (admin/normal/salesperson): " role
+            echo
+
+            # register user
+            register_credentials $username $password "$fullname" $role
+            ;;
+        2)
+            read -p "Username: " username
+            delete_account $username
+            ;;
+        3)
+            exit
+            ;;
+        *)
+            echo "Invalid Selection"
+            ;;
+        esac
+    done
+    }
+# display welcome menu
+while true; do
+    echo "Please select an option: "
+    for ((i = 0; i < ${#MENU[@]}; i++)); do
+        echo "$(expr $i + 1). ${MENU[$i]}"
     done
 
     # PROMT USER FOR CHOICE
     read -p "Enter your choice: " CHOICE
     case $CHOICE in
     1)
-        read -p "Username: " username
-        read -rs -p "Password: " password
-        echo # print new line
-        read -rs -p "Confirm password: " confirm_password
-        echo # print new line
-
-        # Password Confirmation
-        if [[ $password != $confirm_password ]]; then
-            echo "Passwords do not match"
-            return 1
-        fi
-
-        read -p "Fullname: " fullname
-        read -p "Enter role (admin/normal/salesperson): " role
-        echo
-
-        # register user
-        register_credentials $username $password "$fullname" $role
+        login
         ;;
     2)
-        read -p "Username: " username
-        delete_account $username
+        display_registration_menu
+        ;;
+    3)
+        logout
+        ;;
+    4)
+        exit
         ;;
     *)
         echo "Invalid Selection"
         ;;
     esac
-}
-
-# display welcome menu
-echo "Please select an option: "
-for ((i = 0; i < ${#MENU[@]}; i++)); do
-    echo "$(expr $i + 1). ${MENU[$i]}"
 done
-
-# PROMT USER FOR CHOICE
-read -p "Enter your choice: " CHOICE
-case $CHOICE in
-1)
-    login
-    ;;
-2)
-    display_registration_menu
-    ;;
-3)
-    logout
-    ;;
-4)
-    exit
-    ;;
-*)
-    echo "Invalid Selection"
-    ;;
-esac
