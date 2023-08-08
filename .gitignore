@@ -1,0 +1,3 @@
+.DS.Store
+cmake-build-debug/
+.idea/
