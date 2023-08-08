@@ -172,7 +172,6 @@ class Product{
         
         while (token != NULL)
         {
-            //cout << token << endl;
             keyValues[i] = token;
             token = strtok(NULL, ",");
             i++;
