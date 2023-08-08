@@ -2,24 +2,10 @@
 #include <string>
 #include <chrono>
 #include <random>
-
-
-#include <string>
-#include <cstdio>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <stdexcept>
-#include <vector>
-#include <sstream>
-#include <limits>
 #include <cstring>
-#include <cmath>
-
 
 using namespace std;
 using namespace std::chrono;
-
 
 class Product{
 
@@ -163,8 +149,6 @@ class Product{
         return productInJson;
     };
 
-
-
     void productFromJson(string txt)
     {
         //TODO Add code to convert a json string product to product object
@@ -180,17 +164,41 @@ class Product{
             txt.erase(0,1);
             txt.erase(size-2, 1);
         }
-        string word = "";
 
         int i = 0;
         char* str = txt.data();
         char *token = strtok(str, ",");
-
+        string keyValues[9];
+        
         while (token != NULL)
         {
-            cout << token << endl;
+            //cout << token << endl;
+            keyValues[i] = token;
             token = strtok(NULL, ",");
             i++;
         }
+
+        Product product;
+        product.code = fetchValue(keyValues[0]);
     };
+
+    //TODO Implement a way to strip the quotes and pick the value from the key-value pair
+    string fetchValue(string keyValueStr) {
+        for (auto character : keyValueStr)
+        {
+            if (character == '"')
+            {
+                keyValueStr = "";
+            }
+            else
+            {
+                keyValueStr = keyValueStr + character;
+            }
+            //Full string is printed at this point
+            std::cout << keyValueStr << std::endl;
+        }
+        //Full string is cleared by this point
+        std::cout << keyValueStr << std::endl;
+        return keyValueStr;
+    }
 };
