@@ -26,7 +26,7 @@ class FileHandler{
             filename = "data/products.json";
         }
 
-        cout<<"Reading "<<filename<< " File........."<<endl;
+        //cout<<"Reading "<<filename<< " File........."<<endl;
 
         ifstream prodsFile(filename);
 
@@ -40,7 +40,7 @@ class FileHandler{
                 }
         }
 
-        cout<<"Finished Reading "<<filename<< " File........."<<endl;
+        //cout<<"Finished Reading "<<filename<< " File........."<<endl;
 
         return prodList;
     };

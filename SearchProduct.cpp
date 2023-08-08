@@ -26,11 +26,11 @@ public:
 
         for(int i = 0; i< productsVector.size(); i++){
             product = productsVector.at(i);
-            cout << product.toJson();
+            //cout << product.toJson();
             if(to_lowercase(product.getName()).find(to_lowercase(name)) != std::string::npos){
                 searchVector.push_back(product);
             }else{
-                cout << "Not found" << endl;
+                //cout << "Not found" << endl;
             }
         }
         return searchVector;

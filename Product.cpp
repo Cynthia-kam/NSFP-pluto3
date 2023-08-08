@@ -181,43 +181,16 @@ class Product{
             txt.erase(size-2, 1);
         }
         string word = "";
-        for (auto character : txt)
-        {
-            if (character == ',')
-            {
-//                std::cout << word << std::endl;
-                word = "";
-            }
-            else
-            {
-                word = word + character;
-            }
-        }
-//        std::cout << word << std::endl;
 
         int i = 0;
-        char* str = word.data();
-        char *token = strtok(str, ":");
+        char* str = txt.data();
+        char *token = strtok(str, ",");
 
-        cout << "Token: " << token << "" << endl;
-
-         string tokenString = token;
-
-         string keyValue;
-
-        for (auto character : tokenString)
+        while (token != NULL)
         {
-            if (character == '"')
-            {
-                std::cout << keyValue << std::endl;
-                keyValue = "";
-            }
-            else
-            {
-                keyValue = keyValue + character;
-            }
+            cout << token << endl;
+            token = strtok(NULL, ",");
+            i++;
         }
-        std::cout << keyValue << std::endl;
-
     };
 };
