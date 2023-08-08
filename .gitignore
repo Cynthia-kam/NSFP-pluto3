@@ -1,3 +1,4 @@
 .DS.Store
 cmake-build-debug/
 .idea/
+ProductManager.exe
