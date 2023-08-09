@@ -7,24 +7,30 @@ private:
 public:
     int getMenu(){
         int selected = -1;
+        bool isChoiceValid = false;
 
-        cout<<"Menu:"<<endl;
-        cout<<"1. Add product"<<endl;
-        cout<<"2. Search Product By Name"<<endl;
-        cout<<"3. Search Product By Category"<<endl;
-        cout<<"4. Product By Brand"<<endl;
-        cout<<"5. Update Product"<<endl;
-        cout<<"6. Delete Product"<<endl;
-        cout<<"7. Exit Application"<<endl;
+        while(!isChoiceValid){
+            cout<<"Menu:"<<endl;
+            cout<<"1. Add product"<<endl;
+            cout<<"2. Search Product By Name"<<endl;
+            cout<<"3. Search Product By Category"<<endl;
+            cout<<"4. Search Product By Brand"<<endl;
+            cout<<"5. Update Product"<<endl;
+            cout<<"6. Delete Product"<<endl;
+            cout<<"7. Exit Application"<<endl;
 
-        cout << "Enter your choice: " << endl;
+            cout << "Enter your choice: " << endl;
 
-        cin >> selected;
+            cin >> selected;
 
-        if(selected < 0 || selected > 8){
-            cout << "Invalid selection";
+            if(selected < 1 || selected > 7 ||cin.fail()){
+                cout << "Invalid selection" <<endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }else{
+                isChoiceValid = true;
+            }
         }
-
         return selected;
     }
 
@@ -47,12 +53,11 @@ int main()
     ProductManager productManager;
     SearchProduct searchProduct;
     vector<Product> resultsVector;
+    string searchTerm;
 
     int choice = -1;
-    string searchTerm;
-    searchProduct.searchByName("name");
 
-    /*while(choice!=7){
+    while(choice!=7){
         choice = productManager.getMenu();
         if(choice == 1){
             cout << "Selected 1";
@@ -60,16 +65,29 @@ int main()
         else if(choice == 2){
             cout << "Enter product name below:" << endl;
 
-            cin >> searchTerm;
+            cin.ignore();
+            getline(cin, searchTerm);
 
             resultsVector = searchProduct.searchByName(searchTerm);
             searchProduct.showSearchResult(resultsVector, searchTerm);
         }
         else if(choice == 3){
-            cout << "Selected 3";
+            cout << "Enter product category below:" << endl;
+
+            cin.ignore();
+            getline(cin, searchTerm);
+
+            resultsVector = searchProduct.searchByCategory(searchTerm);
+            searchProduct.showSearchResult(resultsVector, searchTerm);
         }
         else if(choice == 4){
-            cout << "Selected 4";
+            cout << "Enter product brand below:" << endl;
+
+            cin.ignore();
+            getline(cin, searchTerm);
+
+            resultsVector = searchProduct.searchByBrand(searchTerm);
+            searchProduct.showSearchResult(resultsVector, searchTerm);
         }
         else if(choice == 5){
             cout << "Selected 5";
@@ -78,15 +96,14 @@ int main()
             cout << "Selected 6";
         }
         else if(choice == 7){
-            cout << "Selected 7";
+            cout << "Thank you for using E-Pharmacy" << endl;
+            exit(EXIT_SUCCESS);
         }
         else{
-            cout << "Selected invalid";
+            cout << "Please try again..." << endl;
         }
     }
-*/
-    //cout << "Exiting...";
-    //return 0;
+    return 0;
 }
 
 

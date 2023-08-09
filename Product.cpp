@@ -2,21 +2,8 @@
 #include <string>
 #include <chrono>
 #include <random>
-#include <cstring>
-#include <type_traits>
-#include <string>
-#include <cstdio>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <stdexcept>
 #include <vector>
 #include <sstream>
-#include <limits>
-#include <cstring>
-#include <cmath>
-
-#include <stdio.h>
 #include <string.h>
 
 using namespace std;
@@ -36,6 +23,10 @@ private:
     bool requires_prescription;
 
 public:
+
+    string getCode() {
+        return code;
+    }
 
     string getName() {
         return name;
@@ -145,25 +136,20 @@ public:
         string productInJson;
         // The Output should look like:
         //{"code":"tgtwdNbCnwx","name":"name 1","brand":"br 2","description":"df","dosage_instruction":"dfg","price":123.000000,"quantity":13,"category":"des","requires_prescription":1}
-
-        Product product;
-        productInJson = "{\"code\":\"" + product.code + "\","
-                                                        "\"name\":\"" + product.name + "\","
-                                                                                       "\"brand\":\"" + product.brand +
-                        "\","
-                        "\"description\":\"" + product.description + "\","
-                                                                     "\"dosage_instruction\":\"" +
-                        product.dosageInstruction + "\","
-                                                    "\"price\":\"" + to_string(product.price) + "\","
-                                                                                                "\"quantity\":\"" +
-                        to_string(product.quantity) + "\","
-                                                      "\"category\":\"" + product.category + "\","
-                                                                                             "\"requires_prescription\":\"" +
-                        to_string(product.requires_prescription) + "\"}";
+        productInJson += "{\"code\":\"" + code + "\","
+                        "\"name\":\"" + name + "\","
+                        "\"brand\":\"" + brand +"\","
+                        "\"description\":\"" + description + "\","
+                        "\"dosage_instruction\":\"" + dosageInstruction + "\","
+                        "\"price\":\"" + to_string(price) + "\","
+                        "\"quantity\":\"" + to_string(quantity) + "\","
+                        "\"category\":\"" + category + "\","
+                        "\"requires_prescription\":\"" +
+                        to_string(requires_prescription) + "\"}";
         return productInJson;
     };
 
-    void productFromJson(string txt) {
+    Product productFromJson(string txt) {
         //{"code":"tgtwdNbCnwx","name":"name 1","brand":"br 2","description":"df","dosage_instruction":"dfg","price":123.000000,"quantity":13,
         // "category":"des","requires_prescription":1}
         // You need to extract value for each field and update private attributes declared above.
@@ -179,31 +165,30 @@ public:
         int i = 0;
         char *str = txt.data();
         char *token = strtok(str, ",");
-        string keyValues[10];
+        string keyValues[9];
 
         while (token != NULL) {
             keyValues[i] = token;
             token = strtok(NULL, ",");
             i++;
         }
-
         Product product;
         product.code = fetchStrValue(keyValues[0]);
         product.name = fetchStrValue(keyValues[1]);
         product.brand = fetchStrValue(keyValues[2]);
         product.description = fetchStrValue(keyValues[3]);
-        product.code = fetchStrValue(keyValues[4]);
+        product.dosageInstruction = fetchStrValue(keyValues[4]);
         product.price = fetchFloatValue(keyValues[5]);
         product.quantity = fetchFloatValue(keyValues[6]);
-        product.dosageInstruction = fetchStrValue(keyValues[7]);
-        product.category = fetchStrValue(keyValues[8]);
-        product.requires_prescription = fetchFloatValue(keyValues[9]);
+        product.category = fetchStrValue(keyValues[7]);
+        product.requires_prescription = fetchBoolValue(keyValues[8]);
+
+        return product;
     };
 
     string fetchStrValue(string keyValueStr) {
         //Input sample "code":"ThisCode"
         string keyValue;
-        string value;
         vector<string> values;
         int m = 0;
         int colonPosition = keyValueStr.find(':');
@@ -224,12 +209,21 @@ public:
     float fetchFloatValue(string keyValueStr) {
         //Input sample "price":13.900000
         string keyValue;
-        string value;
-        vector<string> values;
         int colonPosition = keyValueStr.find(':');
         string str = keyValueStr.substr(colonPosition + 1);
         stringstream ss(str);
         float val;
+        ss >> val;
+        return val;
+    }
+
+    bool fetchBoolValue(string keyValueStr) {
+        //Input sample "requires_prescription":1
+        string keyValue;
+        int colonPosition = keyValueStr.find(':');
+        string str = keyValueStr.substr(colonPosition + 1);
+        stringstream ss(str);
+        bool val;
         ss >> val;
         return val;
     }

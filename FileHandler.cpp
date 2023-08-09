@@ -20,13 +20,14 @@ public:
         vector<string> prodLines;
         string prodLine;
         Product manProd;
+        Product newProduct;
 
 
         if (filename.empty()){
             filename = "data/products.json";
         }
 
-       cout<<"Reading "<<filename<< " File........."<<endl;
+       //cout<<"Reading "<<filename<< " File........."<<endl;
 
         ifstream prodsFile(filename);
 
@@ -34,12 +35,12 @@ public:
 
             prodLines.push_back(prodLine);
             if(prodLine.substr(0,1) == "{"){
-                manProd.productFromJson(prodLine);
-                prodList.push_back(manProd);
+                newProduct = manProd.productFromJson(prodLine);
+                prodList.push_back(newProduct);
             }
         }
 
-        cout<<"Finished Reading "<<filename<< " File........."<<endl;
+        //cout<<"Finished Reading "<<filename<< " File........."<<endl;
 
         return prodList;
     };
