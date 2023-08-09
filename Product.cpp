@@ -164,8 +164,6 @@ public:
     };
 
     void productFromJson(string txt) {
-        //TODO Add code to convert a json string product to product object
-        // string is in the form below
         //{"code":"tgtwdNbCnwx","name":"name 1","brand":"br 2","description":"df","dosage_instruction":"dfg","price":123.000000,"quantity":13,
         // "category":"des","requires_prescription":1}
         // You need to extract value for each field and update private attributes declared above.
@@ -181,31 +179,29 @@ public:
         int i = 0;
         char *str = txt.data();
         char *token = strtok(str, ",");
-        string keyValues[9];
+        string keyValues[10];
 
         while (token != NULL) {
-            cout << token << endl;
             keyValues[i] = token;
             token = strtok(NULL, ",");
             i++;
         }
 
         Product product;
-       // cout << "KeyValue[5]: " << keyValues[5] << endl;
         product.code = fetchStrValue(keyValues[0]);
         product.name = fetchStrValue(keyValues[1]);
         product.brand = fetchStrValue(keyValues[2]);
         product.description = fetchStrValue(keyValues[3]);
         product.code = fetchStrValue(keyValues[4]);
-        //product.price = (keyValues[5]);
-        //product.quantity = fetchStrValue(keyValues[6]);
+        product.price = fetchFloatValue(keyValues[5]);
+        product.quantity = fetchFloatValue(keyValues[6]);
         product.dosageInstruction = fetchStrValue(keyValues[7]);
         product.category = fetchStrValue(keyValues[8]);
-        //product.requires_prescription = fetchStrValue(keyValues[9]);
+        product.requires_prescription = fetchFloatValue(keyValues[9]);
     };
 
-    //TODO Implement a way to strip the quotes and pick the value from the key-value pair
     string fetchStrValue(string keyValueStr) {
+        //Input sample "code":"ThisCode"
         string keyValue;
         string value;
         vector<string> values;
@@ -213,23 +209,28 @@ public:
         int colonPosition = keyValueStr.find(':');
         string str = keyValueStr.substr(colonPosition + 1);
 
-        cout << "Str: " << str << endl;
-
          for (auto character: str) {
-             if(is_same<decltype(str), string>::value == 1) {
-                 if (character == '"') {
-                     values.push_back(keyValue);
-                     keyValue = "";
-                 } else {
-                     keyValue = keyValue + character;
-                 }
+             if (character == '"') {
+                 values.push_back(keyValue);
+                 keyValue = "";
              } else {
-                 keyValue = str;
+                 keyValue = keyValue + character;
              }
-
          }
 
         return values[1];
     }
-};
 
+    float fetchFloatValue(string keyValueStr) {
+        //Input sample "price":13.900000
+        string keyValue;
+        string value;
+        vector<string> values;
+        int colonPosition = keyValueStr.find(':');
+        string str = keyValueStr.substr(colonPosition + 1);
+        stringstream ss(str);
+        float val;
+        ss >> val;
+        return val;
+    }
+};
