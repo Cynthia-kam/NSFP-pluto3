@@ -24,11 +24,13 @@ public:
         if(selected < 0 || selected > 8){
             cout << "Invalid selection";
         }
+
+        return selected;
     }
 
     void addProduct(){
         // TODO add code to add product and 
-        // store the product to products.json file by using Product class and FileHandler class
+            // store the product to products.json file by using Product class and FileHandler class
     }
 
     // TODO Add code for Updating a product
@@ -43,15 +45,25 @@ int main()
     // ADD Code for displaying a welcome Menu
     // and handle all required logic to add, search, update, and delete product
     ProductManager productManager;
-    int choice = -1;
+    SearchProduct searchProduct;
+    vector<Product> resultsVector;
 
-    while(choice!=7){
+    int choice = -1;
+    string searchTerm;
+    searchProduct.searchByName("name");
+
+    /*while(choice!=7){
         choice = productManager.getMenu();
         if(choice == 1){
             cout << "Selected 1";
         }
         else if(choice == 2){
-            cout << "Selected 2";
+            cout << "Enter product name below:" << endl;
+
+            cin >> searchTerm;
+
+            resultsVector = searchProduct.searchByName(searchTerm);
+            searchProduct.showSearchResult(resultsVector, searchTerm);
         }
         else if(choice == 3){
             cout << "Selected 3";
@@ -72,9 +84,9 @@ int main()
             cout << "Selected invalid";
         }
     }
-
-    cout << "Exiting...";
-    return 0;
+*/
+    //cout << "Exiting...";
+    //return 0;
 }
 
 

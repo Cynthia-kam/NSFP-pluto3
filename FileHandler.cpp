@@ -10,7 +10,7 @@
 using namespace std;
 
 class FileHandler{
-    public:
+public:
     string filename;
 
     vector<Product> readJsonFile(){
@@ -20,24 +20,23 @@ class FileHandler{
         vector<string> prodLines;
         string prodLine;
         Product manProd;
-        
+
 
         if (filename.empty()){
             filename = "data/products.json";
         }
 
-        cout<<"Reading "<<filename<< " File........."<<endl;
+       cout<<"Reading "<<filename<< " File........."<<endl;
 
         ifstream prodsFile(filename);
 
         while (getline(prodsFile, prodLine)){
-             
-                prodLines.push_back(prodLine);
 
-                if(prodLine.substr(0,1) == "{"){
-                    manProd.productFromJson(prodLine);
-                    prodList.push_back(manProd);
-                }
+            prodLines.push_back(prodLine);
+            if(prodLine.substr(0,1) == "{"){
+                manProd.productFromJson(prodLine);
+                prodList.push_back(manProd);
+            }
         }
 
         cout<<"Finished Reading "<<filename<< " File........."<<endl;
@@ -48,12 +47,12 @@ class FileHandler{
     void saveToJsonFile(Product p){
 
         vector<Product> pList;
-        
+
         pList = readJsonFile();
 
         pList.push_back(p);
 
-         // Check if the file exists.
+        // Check if the file exists.
         ifstream input_file(filename);
 
         if (!input_file.good()) {
@@ -71,24 +70,24 @@ class FileHandler{
         }
 
         // Delete the file.
-    int ret = remove(filename.c_str());
-    if (ret != 0) {
-        std::cout << "Error deleting file: " << strerror(errno) << "\n";
-        return ;
-    }
-
-    ofstream jsonFile(filename);
-    jsonFile<<"["<<endl;
-    for(int i=0; i<pList.size(); i++){
-
-        if(i< pList.size() -1){
-            jsonFile<< pList.at(i).toJson()<<","<<endl;
+        int ret = remove(filename.c_str());
+        if (ret != 0) {
+            std::cout << "Error deleting file: " << strerror(errno) << "\n";
+            return ;
         }
-        else{
-            jsonFile<< pList.at(i).toJson()<<endl;
+
+        ofstream jsonFile(filename);
+        jsonFile<<"["<<endl;
+        for(int i=0; i<pList.size(); i++){
+
+            if(i< pList.size() -1){
+                jsonFile<< pList.at(i).toJson()<<","<<endl;
+            }
+            else{
+                jsonFile<< pList.at(i).toJson()<<endl;
+            }
         }
-    }
-    jsonFile<<"]"<<endl;      
+        jsonFile<<"]"<<endl;
 
 
     }

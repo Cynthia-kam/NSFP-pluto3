@@ -3,13 +3,28 @@
 #include <chrono>
 #include <random>
 #include <cstring>
+#include <type_traits>
+#include <string>
+#include <cstdio>
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <stdexcept>
+#include <vector>
+#include <sstream>
+#include <limits>
+#include <cstring>
+#include <cmath>
+
+#include <stdio.h>
+#include <string.h>
 
 using namespace std;
 using namespace std::chrono;
 
-class Product{
+class Product {
 
-    private:
+private:
     int quantity;
     string name;
     string brand;
@@ -20,43 +35,42 @@ class Product{
     string category;
     bool requires_prescription;
 
-    public:
+public:
 
-    string getName(){
+    string getName() {
         return name;
     }
 
-    string getBrand(){
+    string getBrand() {
         return brand;
     }
 
-    string getDescription(){
+    string getDescription() {
         return description;
     }
 
-    string getDosageInstruction(){
+    string getDosageInstruction() {
         return dosageInstruction;
     }
 
-    string getCategory(){
+    string getCategory() {
         return category;
     }
-    
-    int getQuantity(){
+
+    int getQuantity() {
         return quantity;
     }
 
-    float getPrice(){
+    float getPrice() {
         return price;
     }
 
-    bool getRequiresPrescription(){
+    bool getRequiresPrescription() {
         return requires_prescription;
     }
 
 
-    string generateUniqueCode()
-    {
+    string generateUniqueCode() {
         string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
         string uniqueCode = "";
@@ -67,8 +81,7 @@ class Product{
 
         // generate 10 characters long unique string
 
-        for (int i = 0; i <= 10; i++)
-        {
+        for (int i = 0; i <= 10; i++) {
             int random_index = distribution(generator) % characters.length();
             uniqueCode += characters[random_index];
         }
@@ -76,37 +89,35 @@ class Product{
         return uniqueCode;
     };
 
-    string promptTextField(string promptText){
+    string promptTextField(string promptText) {
         // method takes text to display e.g: "Enter Product Name:"
         // it prompts a user and return user input in form of text. Text can be made by multiple words.
         string textInput;
-        cout << promptText <<endl;
+        cout << promptText << endl;
         getline(cin, textInput);
         return textInput;
     }
 
 
-    float promptNumberField(string promptText){
+    float promptNumberField(string promptText) {
         // method takes text to display e.g: "Enter Product Name:"
         // it prompts a user and return user input in form of text. Text can be made by multiple words.
         string textInput;
-        cout << promptText <<endl;
+        cout << promptText << endl;
         getline(cin, textInput);
         return stof(textInput);
     }
 
-    bool promptRequirePrescription()
-    {
+    bool promptRequirePrescription() {
         // User can type 1 or 0. 
         // it prompts a user and return user input in form of boolean.
         string textInput;
-        cout << "Does product require a prescription?" <<endl;
+        cout << "Does product require a prescription?" << endl;
         getline(cin, textInput);
         return bool(stoi(textInput));
     }
 
-    void createProduct()
-    {
+    void createProduct() {
         Product product;
         string product_name = promptTextField("Enter product name:");
         product.name = product_name;
@@ -129,75 +140,96 @@ class Product{
         product.code = unique_code;
     };
 
-    string toJson()
-    {
+    string toJson() {
 
         string productInJson;
-      // The Output should look like:
-      //{"code":"tgtwdNbCnwx","name":"name 1","brand":"br 2","description":"df","dosage_instruction":"dfg","price":123.000000,"quantity":13,"category":"des","requires_prescription":1}
+        // The Output should look like:
+        //{"code":"tgtwdNbCnwx","name":"name 1","brand":"br 2","description":"df","dosage_instruction":"dfg","price":123.000000,"quantity":13,"category":"des","requires_prescription":1}
 
         Product product;
-        productInJson = "{\"code\":\""+product.code+"\","
-                        "\"name\":\""+product.name+"\","
-                        "\"brand\":\""+product.brand+"\","
-                        "\"description\":\""+product.description+"\","
-                        "\"dosage_instruction\":\""+product.dosageInstruction+"\","
-                        "\"price\":\""+to_string(product.price)+"\","
-                        "\"quantity\":\""+to_string(product.quantity)+"\","
-                        "\"category\":\""+product.category+"\","
-                        "\"requires_prescription\":\""+ to_string(product.requires_prescription)+"\"}";
+        productInJson = "{\"code\":\"" + product.code + "\","
+                                                        "\"name\":\"" + product.name + "\","
+                                                                                       "\"brand\":\"" + product.brand +
+                        "\","
+                        "\"description\":\"" + product.description + "\","
+                                                                     "\"dosage_instruction\":\"" +
+                        product.dosageInstruction + "\","
+                                                    "\"price\":\"" + to_string(product.price) + "\","
+                                                                                                "\"quantity\":\"" +
+                        to_string(product.quantity) + "\","
+                                                      "\"category\":\"" + product.category + "\","
+                                                                                             "\"requires_prescription\":\"" +
+                        to_string(product.requires_prescription) + "\"}";
         return productInJson;
     };
 
-    void productFromJson(string txt)
-    {
+    void productFromJson(string txt) {
         //TODO Add code to convert a json string product to product object
         // string is in the form below
         //{"code":"tgtwdNbCnwx","name":"name 1","brand":"br 2","description":"df","dosage_instruction":"dfg","price":123.000000,"quantity":13,
         // "category":"des","requires_prescription":1}
         // You need to extract value for each field and update private attributes declared above.
         int size = txt.size();
-        if(txt[size-1] == ','){
-            txt.erase(0,1);
-            txt.erase(size-3, 2);
-        }else{
-            txt.erase(0,1);
-            txt.erase(size-2, 1);
+        if (txt[size - 1] == ',') {
+            txt.erase(0, 1);
+            txt.erase(size - 3, 2);
+        } else {
+            txt.erase(0, 1);
+            txt.erase(size - 2, 1);
         }
 
         int i = 0;
-        char* str = txt.data();
+        char *str = txt.data();
         char *token = strtok(str, ",");
         string keyValues[9];
-        
-        while (token != NULL)
-        {
+
+        while (token != NULL) {
+            cout << token << endl;
             keyValues[i] = token;
             token = strtok(NULL, ",");
             i++;
         }
 
         Product product;
-        product.code = fetchValue(keyValues[0]);
+       // cout << "KeyValue[5]: " << keyValues[5] << endl;
+        product.code = fetchStrValue(keyValues[0]);
+        product.name = fetchStrValue(keyValues[1]);
+        product.brand = fetchStrValue(keyValues[2]);
+        product.description = fetchStrValue(keyValues[3]);
+        product.code = fetchStrValue(keyValues[4]);
+        //product.price = (keyValues[5]);
+        //product.quantity = fetchStrValue(keyValues[6]);
+        product.dosageInstruction = fetchStrValue(keyValues[7]);
+        product.category = fetchStrValue(keyValues[8]);
+        //product.requires_prescription = fetchStrValue(keyValues[9]);
     };
 
     //TODO Implement a way to strip the quotes and pick the value from the key-value pair
-    string fetchValue(string keyValueStr) {
-        for (auto character : keyValueStr)
-        {
-            if (character == '"')
-            {
-                keyValueStr = "";
-            }
-            else
-            {
-                keyValueStr = keyValueStr + character;
-            }
-            //Full string is printed at this point
-            std::cout << keyValueStr << std::endl;
-        }
-        //Full string is cleared by this point
-        std::cout << keyValueStr << std::endl;
-        return keyValueStr;
+    string fetchStrValue(string keyValueStr) {
+        string keyValue;
+        string value;
+        vector<string> values;
+        int m = 0;
+        int colonPosition = keyValueStr.find(':');
+        string str = keyValueStr.substr(colonPosition + 1);
+
+        cout << "Str: " << str << endl;
+
+         for (auto character: str) {
+             if(is_same<decltype(str), string>::value == 1) {
+                 if (character == '"') {
+                     values.push_back(keyValue);
+                     keyValue = "";
+                 } else {
+                     keyValue = keyValue + character;
+                 }
+             } else {
+                 keyValue = str;
+             }
+
+         }
+
+        return values[1];
     }
 };
+
