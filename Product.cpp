@@ -85,7 +85,6 @@ public:
         // it prompts a user and return user input in form of text. Text can be made by multiple words.
         string textInput;
         cout << promptText << endl;
-        cin.ignore();
         getline(cin, textInput);
         return textInput;
     }
@@ -110,10 +109,13 @@ public:
     }
 
     void createProduct() {
+        cin.ignore();
         string product_name = promptTextField("Enter product name:");
         name = product_name;
+        cout << "Saving name as " << product_name <<endl;
         string product_brand = promptTextField("Enter product brand:");
         brand = product_brand;
+        cout << "Saving brand as " << product_brand <<endl;
         string product_description = promptTextField("Enter product description:");
         description = product_description;
         string product_category = promptTextField("Enter product category:");
