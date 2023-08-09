@@ -27,7 +27,7 @@ public:
             filename = "data/products.json";
         }
 
-       //cout<<"Reading "<<filename<< " File........."<<endl;
+        //cout<<"Reading "<<filename<< " File........."<<endl;
 
         ifstream prodsFile(filename);
 
@@ -41,7 +41,7 @@ public:
         }
 
         //cout<<"Finished Reading "<<filename<< " File........."<<endl;
-
+        prodsFile.close();
         return prodList;
     };
 
@@ -69,6 +69,7 @@ public:
             return;
 
         }
+        input_file.close();
 
         // Delete the file.
         int ret = remove(filename.c_str());
@@ -90,6 +91,7 @@ public:
         }
         jsonFile<<"]"<<endl;
 
+        jsonFile.close();
 
     }
 };

@@ -85,6 +85,7 @@ public:
         // it prompts a user and return user input in form of text. Text can be made by multiple words.
         string textInput;
         cout << promptText << endl;
+        cin.ignore();
         getline(cin, textInput);
         return textInput;
     }
@@ -109,26 +110,25 @@ public:
     }
 
     void createProduct() {
-        Product product;
         string product_name = promptTextField("Enter product name:");
-        product.name = product_name;
+        name = product_name;
         string product_brand = promptTextField("Enter product brand:");
-        product.brand = product_brand;
+        brand = product_brand;
         string product_description = promptTextField("Enter product description:");
-        product.description = product_description;
+        description = product_description;
         string product_category = promptTextField("Enter product category:");
-        product.category = product_category;
+        category = product_category;
         string product_dosageInstruction = promptTextField("Enter product dosage instruction:");
-        product.dosageInstruction = product_dosageInstruction;
+        dosageInstruction = product_dosageInstruction;
         float product_quantity = promptNumberField("Enter product quantity:");
-        product.quantity = product_quantity;
+        quantity = product_quantity;
         float product_price = promptNumberField("Enter product price:");
-        product.price = product_price;
+        price = product_price;
         bool product_requiresPrescription = promptRequirePrescription();
-        product.requires_prescription = product_requiresPrescription;
+        requires_prescription = product_requiresPrescription;
         // Add code to generate Unique code for product using generateUniqueCode method
         string unique_code = generateUniqueCode();
-        product.code = unique_code;
+        code = unique_code;
     };
 
     string toJson() {

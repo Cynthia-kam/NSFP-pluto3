@@ -37,11 +37,21 @@ public:
     void addProduct(){
         // TODO add code to add product and 
             // store the product to products.json file by using Product class and FileHandler class
+        Product newProduct;
+        FileHandler fileHandler;
+        newProduct.createProduct();
+        fileHandler.saveToJsonFile(newProduct);
     }
 
-    // TODO Add code for Updating a product
+    void updateProduct(){
+        // TODO add code to update a product and
+        // store the product to products.json file by using Product class and FileHandler class
+    }
 
-    // TODO Add code for deleting a product
+    void deleteProduct(){
+        // TODO add code to delete a product and
+        // store the product to products.json file by using Product class and FileHandler class
+    }
     
 };
 
@@ -60,7 +70,8 @@ int main()
     while(choice!=7){
         choice = productManager.getMenu();
         if(choice == 1){
-            cout << "Selected 1";
+            cout << "Creating new product" << endl;
+            productManager.addProduct();
         }
         else if(choice == 2){
             cout << "Enter product name below:" << endl;
