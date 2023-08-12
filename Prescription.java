@@ -25,15 +25,6 @@ public class Prescription {
 	   public Prescription() { 
 		   prescriptionList = new JSONArray();
 	   }
-	   
-	   public Prescription(String _prescriptionID, String _customerID, String _doctorName, ArrayList<Medication> _medication)
-	   {
-	       prescriptionID = _prescriptionID;
-	       customerID = _customerID;
-	       doctorName = _doctorName;
-	       medications = _medication;
-	       date = LocalDate.now();
-	   }
 
 	public Prescription(String _prescriptionID, String _customerID, String _doctorName, LocalDate _date, ArrayList<Medication> _medications) {
 		prescriptionID = _prescriptionID;

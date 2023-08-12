@@ -54,7 +54,7 @@ public class PrescriptionManagement {
                         numMedications = Integer.parseInt(reader.readLine());
                         ArrayList<Medication> medications = new ArrayList<>();
                         String medName, medDetails, medDosage, medID;
-                        int quantity;
+                        int medQty;
                         String medicationsFilePath = "products.json";
                         displayMedications(medicationsFilePath);
                         for (int i = 1; i <= numMedications; i++) {
@@ -70,14 +70,19 @@ public class PrescriptionManagement {
                             System.out.println("Enter medication dosage");
                             medDosage = reader.readLine();
                             System.out.println("Enter medication quantity");
-                            quantity = Integer.parseInt(reader.readLine());
+                            medQty = Integer.parseInt(reader.readLine());
                             prescription.setDate(LocalDate.now());
 
-                            Medication medication = new Medication(medID, medName, medDetails, medDosage, quantity);
-                            medications.add(medication);
+                            if(isMedicationInStock(medID, medName,medQty)){
+                                Medication medication = new Medication(medID, medName, medDetails, medDosage, medQty);
+                                medications.add(medication);
+                                prescription.setMedications(medications);
+                                prescription.addPrescription(prescription);
+                            }else{
+                                System.out.println("Medication unavailable. Please check medication ID, name or quantity");
+                                break;
+                            }
                         }
-                        prescription.setMedications(medications);
-                        prescription.addPrescription(prescription);
                     }
                     case 2 -> {
                         // Prescriptions must be returned in the array
@@ -146,7 +151,36 @@ public class PrescriptionManagement {
         }
 
     }
-        public static void displayMedications(String filePath) throws FileNotFoundException, IOException, ParseException {
+
+    public static boolean isMedicationInStock(String medicationID, String medicationName, int medicationQuantity) throws FileNotFoundException, IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        boolean isMedicationInStock = false;
+        int availableQuantity;
+        String availableMedicationID, availableMedicationName;
+        try (FileReader fileReader = new FileReader("products.json")) {
+            if (fileReader.read() == -1) {
+                return false;
+            } else {
+                fileReader.close();
+                JSONArray jsonArray = (JSONArray) parser.parse(new FileReader("products.json"));
+                for (Object obj : jsonArray) {
+                    JSONObject jsonObject = (JSONObject) obj;
+                    //Compare ID of available medication to passed medication
+                    availableMedicationID = (String) jsonObject.get("code");
+                    availableMedicationName = (String) jsonObject.get("name");
+                    availableQuantity = Integer.parseInt((String) jsonObject.get("quantity"));
+                    if(availableMedicationID.equals(medicationID) && availableMedicationName.equals(medicationName) && medicationQuantity<=availableQuantity && availableQuantity>0){
+                        isMedicationInStock = true;
+                        break;
+                    }
+                }
+            }
+            return isMedicationInStock;
+        }
+    }
+
+
+        public static void displayMedications(String filePath) throws IOException, ParseException {
             String medicationID, medicationName, medicationPrice, medicationQuantity;
             JSONParser parser = new JSONParser();
             try(FileReader fileReader = new FileReader(filePath)){
