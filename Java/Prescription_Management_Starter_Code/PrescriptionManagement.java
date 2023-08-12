@@ -48,9 +48,12 @@ public class PrescriptionManagement {
                     // TODO: Add code to get Prescription ID, Customer ID,  Doctor's Name
                     // Don't forget to add code to save these information in the prescription
                    prescriptionID = String.valueOf(uuid);
+                   prescription.setPrescriptionID(prescriptionID);
                    customerID=String.valueOf(uuid);
+                   prescription.setCustomerID(customerID);
                    System.out.print("Enter doctor's name: ");
                    doctorName=reader.readLine();
+                   prescription.setDoctorName(doctorName);
                    prescription.setDate(LocalDate.now());
                    // TODO: Add code to display available products/medications before adding them on the prescription
                    String medicationsFilePath = "products.json";
@@ -66,21 +69,28 @@ public class PrescriptionManagement {
 
                        System.out.print("Enter medication name: ");
                        medicationName= reader.readLine();
+
                        System.out.print("Enter medication details: ");
                        medicationDetails=reader.readLine();
+
                        System.out.print("Enter dosage: ");
                        dosage= reader.readLine();
+
                        medicationID=String.valueOf(uuid);
+
                        System.out.println("Enter medication quantity: ");
                        quantity= Integer.parseInt(reader.readLine());
+
                        prescription.setDate(LocalDate.now());
+
                        Medication medication = new Medication(medicationID, medicationName, medicationDetails, dosage, quantity);
+                       medication.setProcessedStatus(false);
+                       medication.getProcessedStatus();
                        medications.add(medication);
                    }
 
                     // TODO: Add code to save all medications inserted by the user on the prescription
-
-
+                   prescription.setMedication(medications);
                    prescription.addPrescription();
                    
                    break;

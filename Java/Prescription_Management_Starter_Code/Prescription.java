@@ -35,7 +35,45 @@ public class Prescription {
 	  
    // TODO: Add code to help you to create object/instance for this class in different way
 
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
 
+	public Medication[] getMedications() {
+		return new Medication[0];
+	}
+
+	public String getPrescriptionID() {
+		return prescriptionID;
+	}
+
+	public void setPrescriptionID(String prescriptionID) {
+		this.prescriptionID = prescriptionID;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getCustomerID() {
+		return customerID;
+	}
+
+	public void setCustomerID(String customerID) {
+		this.customerID = customerID;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setMedication(ArrayList<Medication> medications) {
+		this.medications=medications;
+	}
 
 
 
@@ -52,14 +90,36 @@ public class Prescription {
 		// Format for the prescription: {"DoctorName":"Yves","PrescriptionID":"TA3","Medications":[{"quantity":2,"processedStatus":false,"name":"IBUPROFEN","id":"IB7"}],"CustomerID":"GR","Date":"2023-08-07"}
 
 	    public void addPrescription() throws IOException, ParseException {
-	        JSONArray existingPrescriptions = fileHandler.readJSONArrayFromFile();
-
+			JSONArray existingPrescriptions = fileHandler.readJSONArrayFromFile();
 			// TODO: Add code to add prescription in the file
+			JSONObject newPrescription=new JSONObject();
+			JSONArray newPrescriptionArray=new JSONArray();
+			JSONArray medicationsArray = new JSONArray();
+			if (medications != null) {
+				for (Medication medication : medications) {
+					JSONObject medObject = new JSONObject();
+					medObject.put("id:", medication.getID());
+					medObject.put("name:", medication.getName());
+					medObject.put("quantity:", medication.getQuantity());
+					medObject.put("processedStatus:",medication.getProcessedStatus());
+					// Add more medication properties if needed
+					medicationsArray.add(medObject);
+				}
+			}
+			newPrescription.put("Medications:", medicationsArray);
+			newPrescription.put("doctorName:", this.getDoctorName());
+			newPrescription.put("prescriptionID:",this.getPrescriptionID());
+			newPrescription.put("customerID:",getCustomerID());
+			newPrescription.put("date:",getDate().toString());
 
-	        existingPrescriptions.add(Prescription.prescriptionList);
+			existingPrescriptions.add(newPrescription);
 
-	        fileHandler.writeJSONArrayToFile(existingPrescriptions);
-	    }
+			fileHandler.writeJSONArrayToFile(existingPrescriptions);
+
+//	        existingPrescriptions.add(Prescription.prescriptionList);
+
+
+		}
 	   
 	   
 	   
@@ -148,40 +208,6 @@ public class Prescription {
 			}
 		}
 
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
 
-	public Medication[] getMedications() {
-		return new Medication[0];
-	}
-
-	public String getPrescriptionID() {
-		return prescriptionID;
-	}
-
-	public void setPrescriptionID(String prescriptionID) {
-		this.prescriptionID = prescriptionID;
-	}
-
-	public String getDoctorName() {
-		return doctorName;
-	}
-
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
-	}
-
-	public String getCustomerID() {
-		return customerID;
-	}
-
-	public void setCustomerID(String customerID) {
-		this.customerID = customerID;
-	}
-
-	public String getDate() {
-		return String.valueOf(0);
-	}
 }
 
