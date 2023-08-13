@@ -2,16 +2,7 @@ from . import Stock, Cart, User, UserManagement, BookRecords, Wrapper, Prescript
 
 MSG_WRONG_INPUT = "Wrong input. Try again!"
 class Menu:
-    """Represents the menu class for the project
-
-    Attributes: 
-        stock: stock variable
-        profiles: user management module
-        pharmacist: account of the salesperson
-        records_file: path to the file containing the sales
-        prescriptions_file: path to the file containing the prescriptions.
-        stock_file: path to the file containing the stock data
-    """
+   
     def __init__(self, stock: Stock, profiles: UserManagement, pharmacist: User, records_file: str, prescriptions_file: str, stock_file: str) -> None:
         self.stock = stock
         self.profiles = profiles
@@ -22,27 +13,108 @@ class Menu:
         self.prescriptions_file = prescriptions_file
         self.stock_file = stock_file
 
-    #TODO: Create all the necessary functions/method to create and manage the menu using the
-    # available variables and all the attributes of the class
+    def show_main_menu(self):
+        while True:
+            print("Main Menu:")
+            print("1. Order management")
+            print("2. Analytics")
+            choice = input("Enter your choice: ")
 
-    # Make sure to dump the prescriptions, stock, and sale data after every sale.
+            if choice == "1":
+                self.order_management_menu()
+            elif choice == "2":
+                self.analytics_menu()
+            else:
+                print(MSG_WRONG_INPUT)
+    
+    def order_management_menu(self):
+        while True:
+            print("Order Management:")
+            print("1. Adding to cart")
+            print("2. Remove from cart")
+            print("3. Clear the cart")
+            print("4. Checkout")
+            print("5. Go back to main menu")
+            choice = input("Enter your choice: ")
 
-    # Your menu should have two main options with suboptions. Such as
-    """
-    1. Order management
-        1.1. Adding to a cart (you need to show the list of products and ask the user to select one with ID. Bonus: Can you display with numbers and ask user to choose a number instead?
-                Also ask for quantity.)
-        1.2. Remove from a cart (display the cart and ask the user to select the element to remove. Remove by ID or by index (bonus))
-        1.3. Clear the cart (self explanatory)
-        1.4. Checkout (displays the cart with the total and ask for a prescription element. Proceed to checkout and show a message is successful or not).
-    2. Analytics
-        2.1. Total income from purchases
-        2.2. Prescription statistics
-        2.3. Purchases for a user
-        2.4. Sales by an agent
-        2.5. Top sales
+            if choice == "1":
+                self.add_to_cart()
+            elif choice == "2":
+                self.remove_from_cart()
+            elif choice == "3":
+                self.clear_cart()
+            elif choice == "4":
+                self.checkout()
+            elif choice == "5":
+                return
+            else:
+                print(MSG_WRONG_INPUT)
 
-    * For each of the menu items, when necessary, display a success or error message to guide the user.
-    """
+    def analytics_menu(self):
+        while True:
+            print("Analytics:")
+            print("1. Total income from purchases")
+            print("2. Prescription statistics")
+            print("3. Purchases for a user")
+            print("4. Sales by an agent")
+            print("5. Top sales")
+            print("6. Go back to main menu")
+            choice = input("Enter your choice: ")
 
-    # **CHALLENGE** (BONUS): Can you implement the menu to work as a USSD application? Implement and show your design
+            if choice == "1":
+                self.total_income()
+            elif choice == "2":
+                self.prescription_statistics()
+            elif choice == "3":
+                self.purchases_for_user()
+            elif choice == "4":
+                self.sales_by_agent()
+            elif choice == "5":
+                self.top_sales()
+            elif choice == "6":
+                return
+            else:
+                print(MSG_WRONG_INPUT)
+
+    
+    def add_to_cart(self):
+        # Implement adding items to the cart
+        pass
+
+    def remove_from_cart(self):
+        # Implement removing items from the cart
+        pass
+
+    def clear_cart(self):
+        # Implement clearing the cart
+        pass
+
+    def checkout(self):
+        # Implement the checkout process
+        pass
+
+    def total_income(self):
+        # Implement calculating total income from purchases
+        pass
+
+    def prescription_statistics(self):
+        # Implement prescription statistics
+        pass
+
+    def purchases_for_user(self):
+        # Implement showing purchases for a specific user
+        pass
+
+    def sales_by_agent(self):
+        # Implement showing sales by a specific agent
+        pass
+
+    def top_sales(self):
+        # Implement showing top sales
+        pass
+
+
+# profiles = UserManagement()  # Initialize UserManagement object
+# pharmacist = User()  # Initialize pharmacist User object
+# menu = Menu( profiles, pharmacist, "records.txt", "prescriptions.txt", "stock.txt")
+# menu.show_main_menu()
