@@ -28,7 +28,7 @@ class Menu:
                 print(MSG_WRONG_INPUT)
     
     def order_management_menu(self):
-        while True:
+        try:
             print("Order Management:")
             print("1. Adding to cart")
             print("2. Remove from cart")
@@ -47,11 +47,11 @@ class Menu:
                 self.checkout()
             elif choice == "5":
                 return
-            else:
+        except ValueError:
                 print(MSG_WRONG_INPUT)
 
     def analytics_menu(self):
-        while True:
+        try:
             print("Analytics:")
             print("1. Total income from purchases")
             print("2. Prescription statistics")
@@ -73,7 +73,7 @@ class Menu:
                 self.top_sales()
             elif choice == "6":
                 return
-            else:
+        except ValueError:
                 print(MSG_WRONG_INPUT)
 
     

@@ -35,6 +35,6 @@ if __name__ == '__main__':
     # TODO: Using a while loop, show the menu to the user and guide them through the app
     try:
         while True:
-          Menu.show_main_menu()
+          menu.show_main_menu()
     except ValueError:
        print("Enter a valid choice:")
