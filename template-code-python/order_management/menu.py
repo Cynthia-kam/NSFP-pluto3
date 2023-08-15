@@ -1,5 +1,5 @@
 from . import Stock, Cart, User, UserManagement, BookRecords, Wrapper, Prescription
-
+import json
 MSG_WRONG_INPUT = "Wrong input. Try again!"
 class Menu:
    
@@ -14,7 +14,7 @@ class Menu:
         self.stock_file = stock_file
 
     def show_main_menu(self):
-        while True:
+        try:
             print("Main Menu:")
             print("1. Order management")
             print("2. Analytics")
@@ -24,7 +24,7 @@ class Menu:
                 self.order_management_menu()
             elif choice == "2":
                 self.analytics_menu()
-            else:
+        except ValueError:
                 print(MSG_WRONG_INPUT)
     
     def order_management_menu(self):
