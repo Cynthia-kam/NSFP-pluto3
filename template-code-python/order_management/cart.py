@@ -1,6 +1,6 @@
 from .product import Product
 from .stock import Stock
-
+import json
 class Cart:
     """Represents a cart with a list of products and quantity
 
@@ -11,6 +11,14 @@ class Cart:
     def __init__(self, stock: Stock) -> None:
         self.products = {}
         self.stock = stock
+    def dump(self, outfile: str):
+        """Saves the cart to a JSON file"""
+        try:
+            with open(outfile, 'w') as f:
+                json.dump(self.products, f)
+            print("Product added to cart saved successfully.")
+        except IOError:
+            print("Error adding product to cart file.")
 
     def add(self, productCode: str, quantity: int):
         """Adds a product to the cart with the specified quantity
@@ -25,6 +33,16 @@ class Cart:
         #TODO: If the product was already in the cart, increment the quantity
         
         #TODO: After the checks, add the product to the dictionary
+
+        if quantity<=0:
+            print("quantity can't be less than 0")
+            return
+        if productCode in self.products:
+            self.products[productCode]+=quantity
+        else:
+            self.products[productCode]=quantity
+        
+
 
     def __str__(self) -> str:
         """String representation of the cart

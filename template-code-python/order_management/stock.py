@@ -44,6 +44,15 @@ class Stock:
             infile: input file to the function
         """
         #TODO: Implement the function
+        try:
+            with open(infile, 'r') as f:
+                data = json.load(f)
+                return Stock(data)  
+        except (FileNotFoundError, json.JSONDecodeError):
+            print("Error loading stock from file.")
+            return Stock([])
+
+
     
     def __str__(self) -> str:
         """Returns a string representation of the stock

@@ -59,19 +59,19 @@ class Menu:
             print("4. Sales by an agent")
             print("5. Top sales")
             print("6. Go back to main menu")
-            choice = input("Enter your choice: ")
+            choice = int(input("Enter your choice: "))
 
-            if choice == "1":
+            if choice == 1:
                 self.total_income()
-            elif choice == "2":
+            elif choice == 2:
                 self.prescription_statistics()
-            elif choice == "3":
+            elif choice == 3:
                 self.purchases_for_user()
-            elif choice == "4":
+            elif choice == 4:
                 self.sales_by_agent()
-            elif choice == "5":
+            elif choice == 5:
                 self.top_sales()
-            elif choice == "6":
+            elif choice == 6:
                 return
         except ValueError:
                 print(MSG_WRONG_INPUT)
@@ -79,6 +79,24 @@ class Menu:
     
     def add_to_cart(self):
         # Implement adding items to the cart
+        stock = Stock.load("data/products.json")
+        if len(stock.products) == 0:
+            print("stock of products is empty")
+            return
+        else:
+            print("List of products in stock")
+            print("*" * 25)
+            print(f"{'Code':<40}{'Name':<20}{'Brand':<20}{'Quantity':<10}{'Category':<20}{'Price':<10}")
+            print("-" * 120)
+            for product in stock.products:
+                print(f"{product['code']:<40}{product['name']:<20}{product['brand']:<20}{product['quantity']:<10}{product['category']:<20}{product['price']:<10}")
+            print("-" * 120)
+            product_code=input("Enter code for a product to add to cart:")
+            product_quantity=int(input("Enter quantity of product to add to cart:"))
+            # selected_product=stock.products[product_code]
+            cart = Cart(stock)
+            cart.add(product_code,product_quantity)
+            cart.dump("data/cart.json")
         pass
 
     def remove_from_cart(self):
